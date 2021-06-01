@@ -1,0 +1,8 @@
+{"1": {
+	"Files" : ["Epidemie/0100_ExponentieleGroeiCovid.ipynb", "Epidemie/0200_SIRModel.ipynb", "Epidemie/0300_SocialeNetwerken.ipynb", "Epidemie/0400_ZiekteUitbraakSocialeNetwerk.ipynb", "Epidemie/.data/covidbelgie.txt", "Epidemie/.data/ziekenhuisbezetting.csv", "Epidemie/.images/cclic.png", "Epidemie/.images/graph.png", "Epidemie/.images/socialnetwerk.png", "Epidemie/.images/logodwengo.png", "Epidemie/.images/netwerkkinderen.png", "Epidemie/.images/ziekteverspr.png"],
+	"Resource" : "S",
+	"Description" : "Leerlijn Epidemie a.d.h.v. SIR Model en sociale netwerken voorgesteld door grafen",
+	"Name" : "Epidemie"
+	}
+}
+
