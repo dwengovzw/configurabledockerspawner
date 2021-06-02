@@ -1009,6 +1009,8 @@ class DockerSpawner(Spawner):
             volumes=self.volume_mount_points,
             name=self.container_name,
             command=(await self.get_command()),
+            mem_limit=self.mem_limit,
+            cpu_shares=self.cpu_shares,
         )
 
         # ensure internal port is exposed

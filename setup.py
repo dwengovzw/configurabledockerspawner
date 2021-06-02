@@ -24,7 +24,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the current package version.
 version_ns = {}
-with open(pjoin(here, 'dockerspawner', '_version.py')) as f:
+with open(pjoin(here, 'configurabledockerspawner', '_version.py')) as f:
     exec(f.read(), {}, version_ns)
 
 install_requires = []
@@ -52,16 +52,16 @@ class bdist_egg_disabled(bdist_egg):
 
 
 setup_args = dict(
-    name='dockerspawner',
-    packages=['dockerspawner'],
+    name='configurabledockerspawner',
+    packages=['configurabledockerspawner'],
     version=version_ns['__version__'],
-    description="""Dockerspawner: A custom spawner for Jupyterhub.""",
-    long_description="Spawn single-user servers with Docker.",
-    author="Jupyter Development Team",
-    author_email="jupyter@googlegroups.com",
-    url="https://jupyter.org",
+    description="""ConfigurableDockerspawner: A custom spawner for Jupyterhub.""",
+    long_description="Spawn single-user servers with Docker and some extras.",
+    author="Dwengo",
+    author_email="",
+    url="https://dwengo.org",
     license="BSD",
-    platforms="Linux, Mac OS X",
+    platforms="Linux",
     keywords=['Interactive', 'Interpreter', 'Shell', 'Web'],
     classifiers=[
         'Intended Audience :: Developers',
@@ -74,9 +74,7 @@ setup_args = dict(
     install_requires=install_requires,
     entry_points={
         'jupyterhub.spawners': [
-            'docker = dockerspawner:DockerSpawner',
-            'docker-system-user = dockerspawner:SystemUserSpawner',
-            'docker-swarm = dockerspawner:SwarmSpawner',
+            'docker = configurabledockerspawner:ConfigurableDockerSpawner',
         ],
     },
     python_requires=">=3.6",
