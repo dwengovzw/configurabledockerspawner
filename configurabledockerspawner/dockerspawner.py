@@ -965,6 +965,7 @@ class DockerSpawner(Spawner):
         else:
             image_info = await self.docker("inspect_image", self.image)
             cmd = image_info["Config"]["Cmd"]
+
         return cmd + self.get_args()
 
     async def remove_object(self):
@@ -1002,7 +1003,6 @@ class DockerSpawner(Spawner):
 
     async def create_object(self):
         """Create the container/service object"""
-
         create_kwargs = dict(
             image=self.image,
             environment=self.get_env(),
@@ -1036,6 +1036,7 @@ class DockerSpawner(Spawner):
             host_config["port_bindings"] = {self.port: (self.host_ip,)}
         host_config.update(self._render_templates(self.extra_host_config))
         host_config.setdefault("network_mode", self.network_name)
+
 
         self.log.debug("Starting host with config: %s", host_config)
 

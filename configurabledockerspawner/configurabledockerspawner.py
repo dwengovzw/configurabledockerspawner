@@ -1,4 +1,4 @@
-from dockerspawner import DockerSpawner
+from .dockerspawner import DockerSpawner
 import json
 import asyncio
 
@@ -15,9 +15,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
         
     async def start(self, image=None, extra_create_kwargs=None, extra_host_config=None):
 
-        self.log.warning("######################################START####################################")
-        self.log.warning(ConfigurableDockerSpawner)
-        self.log.warning(self)
+        self.log.warning("######################################START2####################################")
         """Start the single-user server in a docker container.
 
         Additional arguments to create/host config/etc. can be specified
@@ -29,12 +27,14 @@ class ConfigurableDockerSpawner(DockerSpawner):
         """
 
         # Get the identifier of the container (defined in our json file)
-        container_id = "1" # self.user_options.get('id')  # TODO: Get this through the request sent to the hub's api
+        container_id = self.user_options.get('id')  # TODO: Get this through the request sent to the hub's api
+        self.log.warning("The user_options contain {}".format(self.user_options))
 
         # Read json file
         json_config = self.read_json_containerinfo()
         if (container_id not in json_config):
             self.log.warning("The specified containerid does not exist, running default container.")
+            container_id = "1"
 
         self.notebook_dir = self.extract_from_json(json_config, container_id, "BasePath")
 
@@ -112,6 +112,18 @@ class ConfigurableDockerSpawner(DockerSpawner):
         return (ip, port)
 
 
+    def options_from_query(self, query_data):
+        self.log.warning("Query data = {}".format(query_data))
+        #self.user_options = query_data
+        return self.options_from_form(query_data)
+
+    def options_from_form(self, formdata):
+        """Turn options formdata into user_options"""
+        options = {}
+        if 'id' in formdata:
+            options['id'] = formdata['id'][0]
+        return options
+
     def read_json_containerinfo(self):
         js = {}
         with open(self.repolocation + "PythonNotebooks.json") as jsonfile:
@@ -166,3 +178,51 @@ class ConfigurableDockerSpawner(DockerSpawner):
         exec_id = await self.docker("exec_create", **exec_kwargs)
 
         return self.docker("exec_start", exec_id=exec_id)
+
+
+    async def create_object(self):
+        """Create the container/service object"""
+        create_kwargs = dict(
+            image=self.image,
+            environment=self.get_env(),
+            volumes=self.volume_mount_points,
+            name=self.container_name,
+            command=(await self.get_command() + ["--NotebookApp.allow_hidden=True", "--ContentsManger.allow_hidden=True", "--TreeHandler.allow_hidden=False", "--FileContentsManager.allow_hidden=False", "--AuthenticatedFileHandler.allow_hidden=True", "--NotebookApp.allow_origin='*'"])
+        )
+
+        # ensure internal port is exposed
+        create_kwargs["ports"] = {"%i/tcp" % self.port: None}
+
+        create_kwargs.update(self._render_templates(self.extra_create_kwargs))
+
+        # build the dictionary of keyword arguments for host_config
+        host_config = dict(
+            auto_remove=self.remove,
+            binds=self.volume_binds,
+            links=self.links,
+            mounts=self.mount_binds,
+            mem_limit=self.mem_limit,
+            cpu_shares=self.cpu_shares
+        )
+
+        if getattr(self, "mem_limit", None) is not None:
+            # If jupyterhub version > 0.7, mem_limit is a traitlet that can
+            # be directly configured. If so, use it to set mem_limit.
+            # this will still be overriden by extra_host_config
+            host_config["mem_limit"] = self.mem_limit
+
+        if not self.use_internal_ip:
+            host_config["port_bindings"] = {self.port: (self.host_ip,)}
+        host_config.update(self._render_templates(self.extra_host_config))
+        host_config.setdefault("network_mode", self.network_name)
+
+
+        self.log.debug("Starting host with config: %s", host_config)
+        self.log.debug("Starting container with config: %s", create_kwargs)
+
+        host_config = self.client.create_host_config(**host_config)
+        create_kwargs.setdefault("host_config", {}).update(host_config)
+
+        # create the container
+        obj = await self.docker("create_container", **create_kwargs)
+        return obj
