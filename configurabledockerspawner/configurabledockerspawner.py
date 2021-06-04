@@ -23,7 +23,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
         
     async def start(self, image=None, extra_create_kwargs=None, extra_host_config=None):
 
-        self.log.warning("######################################START2####################################")
+        self.log.debug("######################################START####################################")
         """Start the single-user server in a docker container.
 
         Additional arguments to create/host config/etc. can be specified
@@ -36,7 +36,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
 
         # Get the identifier of the container (defined in our json file)
         container_id = self.user_options.get('id')  # TODO: Get this through the request sent to the hub's api
-        self.log.warning("The user_options contain {}".format(self.user_options))
+        self.log.info("The user_options contain {}".format(self.user_options))
 
         # Read json file
         json_config = self.read_json_containerinfo()
@@ -76,7 +76,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
 
         obj = await self.get_object()
         if obj and self.remove:
-            self.log.warning(
+            self.log.info(
                 "Removing %s that should have been cleaned up: %s (id: %s)",
                 self.object_type,
                 self.object_name,
@@ -112,15 +112,15 @@ class ConfigurableDockerSpawner(DockerSpawner):
             # Create folder structure for file
             cmd = "docker exec " + self.object_name + " mkdir -p -m 755 " + basepath + file[:file.rfind('/')] 
             stdout, stderr = await self.execute_command(cmd)
-            self.log.info("Stdout: %s \\nStderr: %s", stdout, stderr)
+            self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
             # Copy file to container
             cmd = "docker cp " + self.repolocation + file + " " + self.object_name + ":" + basepath + file
             stdout, stderr = await self.execute_command(cmd)
-            self.log.info("Stdout: %s \\nStderr: %s", stdout, stderr)
+            self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
             # change file owner
             cmd = "docker exec " + self.object_name + " chown jovyan:users " + basepath + file
             stdout, stderr = await self.execute_command(cmd)
-            self.log.info("Stdout: %s \\nStderr: %s", stdout, stderr)
+            self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
 
         
             
@@ -132,7 +132,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
 
 
     def options_from_query(self, query_data):
-        self.log.warning("Query data = {}".format(query_data))
+        self.log.debug("Query data = {}".format(query_data))
         #self.user_options = query_data
         return self.options_from_form(query_data)
 
