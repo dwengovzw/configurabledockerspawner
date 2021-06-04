@@ -1,4 +1,5 @@
-from .dockerspawner import DockerSpawner
+# from .dockerspawner import DockerSpawner
+from dockerspawner import DockerSpawner
 from traitlets import Unicode
 import json
 import asyncio
