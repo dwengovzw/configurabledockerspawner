@@ -4,7 +4,7 @@
 # Configuration file for JupyterHub
 #import os
 from jupyter_client.localinterfaces import public_ips
-import customtmpauthenticator 
+import tmpauthenticator 
 
 
 c = get_config()
@@ -29,9 +29,9 @@ c.JupyterHub.api_tokens = {
     "6d5d503af19e3db21fd7f40f980ac5a69c1dfedb40ae8871d21e9b1d15de4932": "dwengo",
 }
 
-c.JupyterHub.authenticator_class = customtmpauthenticator.CustomTmpAuthenticator
+c.JupyterHub.authenticator_class = tmpauthenticator.TmpAuthenticator
 
-#c.JupyterHub.allow_named_servers = True
+#c.TmpAuthenticator.force_new_server = True 
 
 
 c.JupyterHub.services = [
@@ -66,8 +66,13 @@ notebook_dir = '/home/jovyan'
 c.Spawner.notebook_dir = notebook_dir
 # Remove containers once they are stopped
 c.ConfigurableDockerSpawner.remove_containers = True
+c.ConfigurableDockerSpawner.remove = True 
+
 # For debugging arguments passed to spawned containers
 c.ConfigurableDockerSpawner.debug = True
+
+# For setting the repository location with the Python notebooks
+c.ConfigurableDockerSpawner.repolocation = '/home/tneutens/Documents/UGent/Onderwijs/KIKS/server/PythonNotebooks/'
 
 # User containers will access hub by container name on the Docker network
 c.JupyterHub.hub_ip = ip

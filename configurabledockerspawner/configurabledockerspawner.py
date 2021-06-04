@@ -1,4 +1,5 @@
 from .dockerspawner import DockerSpawner
+from traitlets import Unicode
 import json
 import asyncio
 
@@ -10,7 +11,14 @@ class ConfigurableDockerSpawner(DockerSpawner):
         "L": {"mem_limit": "2G", "cpu_shares": 1024}
     }
 
-    repolocation = '/home/tneutens/Documents/UGent/Onderwijs/KIKS/server/PythonNotebooks/'
+    repolocation = Unicode(
+        "",
+        help="""The location of the repository with the json files and notebooks
+        """,
+        config=True,
+    )
+
+    # repolocation = '/home/tneutens/Documents/UGent/Onderwijs/KIKS/server/PythonNotebooks/'
     defaultImageName = 'jupyter/scipy-notebook:latest'
         
     async def start(self, image=None, extra_create_kwargs=None, extra_host_config=None):
@@ -36,7 +44,8 @@ class ConfigurableDockerSpawner(DockerSpawner):
             self.log.warning("The specified containerid does not exist, running default container.")
             container_id = "1"
 
-        self.notebook_dir = self.extract_from_json(json_config, container_id, "BasePath")
+        # Update the notebook directory where the file tree will open if it is present in the json config
+        self.update_notebook_dir(json_config, container_id) 
 
         if image:
             self.log.warning("Specifying image via .start args is deprecated")
@@ -61,9 +70,19 @@ class ConfigurableDockerSpawner(DockerSpawner):
         await self.pull_image(self.image)
         
         # Get memory setting from config file
-        memory_setting = self.extract_from_json(json_config, container_id, "Resource")
+        memory_setting = self.extract_from_json(json_config, container_id, "Resource") # TODO handle None when there is no Resource key in the json file
         self.mem_limit = self.resourcetypes[memory_setting]["mem_limit"]
         self.cpu_shares = self.resourcetypes[memory_setting]["cpu_shares"]
+
+        obj = await self.get_object()
+        if obj and self.remove:
+            self.log.warning(
+                "Removing %s that should have been cleaned up: %s (id: %s)",
+                self.object_type,
+                self.object_name,
+                self.object_id[:7],
+            )
+            await self.remove_object()
 
         obj = await self.create_object()
         self.object_id = obj[self.object_id_key]
@@ -124,6 +143,10 @@ class ConfigurableDockerSpawner(DockerSpawner):
             options['id'] = formdata['id'][0]
         return options
 
+    def update_notebook_dir(self, json_config, container_id):
+        if self.extract_from_json(json_config, container_id, "BasePath") is not None:
+            self.notebook_dir = self.extract_from_json(json_config, container_id, "BasePath")
+
     def read_json_containerinfo(self):
         js = {}
         with open(self.repolocation + "PythonNotebooks.json") as jsonfile:
@@ -131,16 +154,10 @@ class ConfigurableDockerSpawner(DockerSpawner):
         return js   
 
     def extract_from_json(self, json_obj, id, type):
-        return json_obj[id][type]
-
-    # def extract_files_from_json(self, json_obj, id):
-    #     return json_obj[id]["Files"]
-
-    # def extract_resource(self, json_obj, id):
-    #     return json_obj[id]["Resource"]
-
-    # def extract_base_path(self, json_obj, id):
-    #     return json_obj[id]["BasePath"]
+        if type in json_obj[id]:
+            return json_obj[id][type]
+        else: 
+            return None
 
     def extract_image_for_container(self, json_obj, id):
         if "ImageName" in json_obj[id]:
