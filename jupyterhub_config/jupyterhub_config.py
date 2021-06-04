@@ -9,7 +9,10 @@ import tmpauthenticator
 
 c = get_config()
 ip = public_ips()[0]
-print("---------------------- PUBLIC IP: {} --------------------".format(ip))
+#print("---------------------- PUBLIC IP: {} --------------------".format(ip))
+
+c.ConfigurableHTTPProxy.api_url = 'http://127.0.0.1:5432'
+
 
 c.LocalAuthenticator.create_system_users = True
 
@@ -72,7 +75,7 @@ c.ConfigurableDockerSpawner.remove = True
 c.ConfigurableDockerSpawner.debug = True
 
 # For setting the repository location with the Python notebooks
-c.ConfigurableDockerSpawner.repolocation = '/home/tneutens/Documents/UGent/Onderwijs/KIKS/server/PythonNotebooks/'
+c.ConfigurableDockerSpawner.repolocation = '/root/PythonNotebooks/'
 
 # User containers will access hub by container name on the Docker network
 c.JupyterHub.hub_ip = ip

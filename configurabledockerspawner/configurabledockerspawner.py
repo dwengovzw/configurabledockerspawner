@@ -118,7 +118,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
             stdout, stderr = await self.execute_command(cmd)
             self.log.info("Stdout: %s \\nStderr: %s", stdout, stderr)
             # change file owner
-            cmd = "docker exec " + self.object_name + " chown jovyan:users " + basepath + file
+            cmd = "docker exec -u root " + self.object_name + " chown jovyan:users " + basepath + file
             stdout, stderr = await self.execute_command(cmd)
             self.log.info("Stdout: %s \\nStderr: %s", stdout, stderr)
 
