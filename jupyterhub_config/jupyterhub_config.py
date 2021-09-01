@@ -19,6 +19,7 @@ c.LocalAuthenticator.create_system_users = True
 c.Authenticator.allowed_users = {'tneutens', 'service-admin', 'ilearn', 'dwengo'}
 c.Authenticator.admin_user = {'tneutens', 'service-admin'}
 
+c.JupyterHub.base_url = '/jupyterhub/'
 c.JupyterHub.admin_users = {"service-admin", 'tneutens'}
 c.JupyterHub.api_tokens = {
     "2f482d5b5f336d43806e2469b550509f403e075e4d30bee81583eb85ec0586d3": "service-admin",
