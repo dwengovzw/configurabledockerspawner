@@ -35,7 +35,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
         """
 
         # Get the identifier of the container (defined in our json file)
-        container_id = self.user_options.get('id')  # TODO: Get this through the request sent to the hub's api
+        container_id = self.user_options.get('id') 
         self.log.info("The user_options contain {}".format(self.user_options))
 
         # Read json file
@@ -100,14 +100,13 @@ class ConfigurableDockerSpawner(DockerSpawner):
             self.object_type,
             self.object_name,
             self.container_id[:7],
-        )
-
-        
+        )  
 
         # start the container
         await self.start_object()
 
-        basepath = "/home/jovyan/"
+        basepath = "/home/jovyan/work/"
+
         for file in self.extract_from_json(json_config, container_id, "Files"):
             # Create folder structure for file
             cmd = "docker exec " + self.object_name + " mkdir -p -m 755 " + basepath + file[:file.rfind('/')] 
@@ -121,8 +120,6 @@ class ConfigurableDockerSpawner(DockerSpawner):
             cmd = "docker exec " + self.object_name + " chown jovyan:users " + basepath + file
             stdout, stderr = await self.execute_command(cmd)
             self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
-
-        
             
         ip, port = await self.get_ip_and_port()
         self.user.server.ip = ip

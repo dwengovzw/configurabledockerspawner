@@ -63,7 +63,7 @@ c.JupyterHub.spawner_class = 'configurabledockerspawner.ConfigurableDockerSpawne
 # it.  Most jupyter/docker-stacks *-notebook images run the Notebook server as
 # user `jovyan`, and set the notebook directory to `/home/jovyan/work`.
 # We follow the same convention.
-notebook_dir = '/home/jovyan'
+notebook_dir = '/home/jovyan/work'
 c.Spawner.notebook_dir = notebook_dir
 # Remove containers once they are stopped
 c.ConfigurableDockerSpawner.remove_containers = True
