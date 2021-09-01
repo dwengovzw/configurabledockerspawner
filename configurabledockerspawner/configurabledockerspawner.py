@@ -108,7 +108,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
         # start the container
         await self.start_object()
 
-        basepath = "/home/jovyan/"
+        basepath = "/home/jovyan/work/"
         for file in self.extract_from_json(json_config, container_id, "Files"):
             # Create folder structure for file
             cmd = "docker exec " + self.object_name + " mkdir -p -m 755 " + basepath + file[:file.rfind('/')] 
