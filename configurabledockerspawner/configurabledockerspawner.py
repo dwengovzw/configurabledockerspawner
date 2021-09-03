@@ -146,7 +146,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
 
     def update_notebook_dir(self, json_config, container_id):
         if self.extract_from_json(json_config, container_id, "BasePath") is not None:
-            self.notebook_dir = self.extract_from_json(json_config, container_id, "BasePath")
+            self.notebook_dir = basepath + self.extract_from_json(json_config, container_id, "BasePath")
 
     def read_json_containerinfo(self):
         js = {}
