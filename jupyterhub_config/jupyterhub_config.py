@@ -81,6 +81,8 @@ c.ConfigurableDockerSpawner.repolocation = '/root/PythonNotebooks/'
 # Pull policy for docker images
 c.ConfigurableDockerSpawner.pull_policy = 'always'
 
+c.ConfigurableDockerSpawner.network_name = Unicode('bridge')
+
 # User containers will access hub by container name on the Docker network
 c.JupyterHub.hub_ip = ip
 c.JupyterHub.hub_port = 9000
