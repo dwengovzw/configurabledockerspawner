@@ -68,7 +68,7 @@ c.Spawner.notebook_dir = notebook_dir
 # Remove containers once they are stopped
 c.ConfigurableDockerSpawner.remove_containers = True
 c.ConfigurableDockerSpawner.remove = True 
-
+c.ConfigurableDockerSpawner.network_name = Unicode('bridge')
 # For debugging arguments passed to spawned containers
 c.ConfigurableDockerSpawner.debug = True
 
