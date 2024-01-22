@@ -116,10 +116,11 @@ class ConfigurableDockerSpawner(DockerSpawner):
             cmd = "docker cp -a " + self.repolocation + file + " " + self.object_name + ":" + basepath + file
             stdout, stderr = await self.execute_command(cmd)
             self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
-            # change file owner
-            #cmd = "docker exec " + self.object_name + " chown jovyan:users " + basepath + file
-            #stdout, stderr = await self.execute_command(cmd)
-            #self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
+
+        # disable news notification
+        cmd = "docker exec " + self.object_name + ' jupyter labextension disable "@jupyterlab/apputils-extension:announcements" '
+        stdout, stderr = await self.execute_command(cmd)
+        self.log.debug("Stdout: %s \\nStderr: %s", stdout, stderr)
             
         ip, port = await self.get_ip_and_port()
         self.user.server.ip = ip
