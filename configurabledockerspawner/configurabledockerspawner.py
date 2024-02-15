@@ -9,7 +9,7 @@ class ConfigurableDockerSpawner(DockerSpawner):
         "S": {"mem_limit": "512M", "cpu_shares": 256},
         "M": {"mem_limit": "1G", "cpu_shares": 512},
         "L": {"mem_limit": "2G", "cpu_shares": 1024},
-        "STUPID": {"mem_limit": "50G", "cpu_shares": 1024 }
+        "XL": {"mem_limit": "5G", "cpu_shares": 2048 }
     }
 
     repolocation = Unicode(
